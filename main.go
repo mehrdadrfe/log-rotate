@@ -19,5 +19,5 @@ func main() {
 		},
 	}
 
-	FilesToDelete(configs)
+	ConcurrentFilesToDelete(configs)
 }
