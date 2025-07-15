@@ -4,4 +4,5 @@ type Config struct {
 	NameDir       string
 	LogDir        string
 	RetentionDays int
+	DryRun        bool
 }

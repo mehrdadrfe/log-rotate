@@ -9,24 +9,18 @@ import (
 )
 
 func ConcurrentFilesToDelete(configs []Config) {
-	fileChan := make(chan string, 100) // buffered channel for file paths
+	fileChan := make(chan string, 100)
 	var wg sync.WaitGroup
 
-	// Start 4 worker goroutines
 	numWorkers := 4
 	for i := 0; i < numWorkers; i++ {
 		wg.Add(1)
 		go func(workerID int) {
 			defer wg.Done()
 			for path := range fileChan {
-				info, err := os.Stat(path)
-				if err != nil {
-					fmt.Printf("[Worker %d] Error stat %s: %v\n", workerID, path, err)
-					continue
-				}
-				// Example: get retention days from parent config — here we use 7 days for demo
-				cutoff := time.Now().AddDate(0, 0, -7)
-				if info.ModTime().Before(cutoff) {
+				if configs[0].DryRun {
+					fmt.Printf("[Worker %d] Would delete: %s\n", workerID, path)
+				} else {
 					err := os.Remove(path)
 					if err != nil {
 						fmt.Printf("[Worker %d] Failed to delete %s: %v\n", workerID, path, err)
@@ -38,10 +32,9 @@ func ConcurrentFilesToDelete(configs []Config) {
 		}(i)
 	}
 
-	// Walk through all configs and send files to channel
+	// Producer: walk configs, find old files, send to channel
 	for _, config := range configs {
 		fmt.Printf("Scanning directory: %s (retention: %d days)\n", config.LogDir, config.RetentionDays)
-
 		entries, err := os.ReadDir(config.LogDir)
 		if err != nil {
 			fmt.Printf("Error reading dir %s: %v\n", config.LogDir, err)
@@ -61,12 +54,11 @@ func ConcurrentFilesToDelete(configs []Config) {
 				continue
 			}
 			if info.ModTime().Before(cutoff) {
-				// send to workers
 				fileChan <- path
 			}
 		}
 	}
 
-	close(fileChan) // no more files coming
-	wg.Wait()       // wait for all workers to finish
+	close(fileChan)
+	wg.Wait()
 }
