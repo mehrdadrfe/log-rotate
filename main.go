@@ -6,10 +6,10 @@ import (
 )
 
 func main() {
-	name := flag.String("name", "cli", "Name of the directory (for logging)")
-	dir := flag.String("dir", "/var/log/nginx", "Directory to clean")
+	name := flag.String("name", "cli", "Label name for this run")
+	dir := flag.String("dir", "", "Directory to scan (e.g., /var/log/nginx)")
 	days := flag.Int("days", 7, "Retention period in days")
-	dryRun := flag.Bool("dry-run", true, "If true, only print files; don’t delete")
+	dryRun := flag.Bool("dry-run", true, "Only print files to delete; set false to actually delete")
 
 	flag.Parse()
 
