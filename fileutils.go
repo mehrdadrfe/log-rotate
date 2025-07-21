@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"sync"
@@ -19,13 +19,13 @@ func ConcurrentFilesToDelete(configs []Config) {
 			defer wg.Done()
 			for path := range fileChan {
 				if configs[0].DryRun {
-					fmt.Printf("[Worker %d] Would delete: %s\n", workerID, path)
+					log.Printf("[Worker %d] Would delete: %s\n", workerID, path)
 				} else {
 					err := os.Remove(path)
 					if err != nil {
-						fmt.Printf("[Worker %d] Failed to delete %s: %v\n", workerID, path, err)
+						log.Printf("[Worker %d] Failed to delete %s: %v\n", workerID, path, err)
 					} else {
-						fmt.Printf("[Worker %d] Deleted: %s\n", workerID, path)
+						log.Printf("[Worker %d] Deleted: %s\n", workerID, path)
 					}
 				}
 			}
@@ -34,10 +34,10 @@ func ConcurrentFilesToDelete(configs []Config) {
 
 	// Producer: walk configs, find old files, send to channel
 	for _, config := range configs {
-		fmt.Printf("Scanning directory: %s (retention: %d days)\n", config.LogDir, config.RetentionDays)
+		log.Printf("Scanning directory: %s (retention: %d days)\n", config.LogDir, config.RetentionDays)
 		entries, err := os.ReadDir(config.LogDir)
 		if err != nil {
-			fmt.Printf("Error reading dir %s: %v\n", config.LogDir, err)
+			log.Printf("Error reading dir %s: %v\n", config.LogDir, err)
 			continue
 		}
 
@@ -50,7 +50,7 @@ func ConcurrentFilesToDelete(configs []Config) {
 			path := filepath.Join(config.LogDir, entry.Name())
 			info, err := entry.Info()
 			if err != nil {
-				fmt.Printf("Error stat %s: %v\n", path, err)
+				log.Printf("Error stat %s: %v\n", path, err)
 				continue
 			}
 			if info.ModTime().Before(cutoff) {

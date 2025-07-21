@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"fmt"
+	"log"
 )
 
 func main() {
@@ -13,7 +13,7 @@ func main() {
 
 	flag.Parse()
 
-	fmt.Printf("Running log-rotate: name=%s, dir=%s, retention=%d days, You can use dry-run to just prints what it would delete, dry-run=%v \n", *name, *dir, *days, *dryRun)
+	log.Printf("Running log-rotate: name=%s, dir=%s, retention=%d days, You can use dry-run to just prints what it would delete, dry-run=%v \n", *name, *dir, *days, *dryRun)
 
 	config := Config{
 		NameDir:       *name,
