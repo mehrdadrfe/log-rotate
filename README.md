@@ -20,3 +20,13 @@ A simple CLI tool written in Go to clean up old log files based on a retention p
 git clone https://github.com/mehrdadrfe/log-rotate.git
 cd log-rotate
 go run main.go --name=nginx --dir=/var/log/nginx --days=7 --dry-run=false
+
+
+## 🪵 Logging
+
+By default, logs print to the console.
+
+To log to a file (recommended for cron):
+
+```bash
+go run main.go --dir=/var/log/nginx --days=7 --dry-run=false > run.log 2>&1
