@@ -5,4 +5,5 @@ type Config struct {
 	LogDir        string
 	RetentionDays int
 	DryRun        bool
+	logPath       string
 }
